@@ -340,17 +340,23 @@ class Salesforce(object):
             * previous_result -- the modified result of previous calls to
                                  Salesforce for this query
             """
-            if previous_result['done']:
-                return previous_result
-            else:
-                result = self.query_more(previous_result['nextRecordsUrl'],
-                                         identifier_is_url=True, **kwargs)
-                result['totalSize'] += previous_result['totalSize']
-                # Include the new list of records with the previous list
-                previous_result['records'].extend(result['records'])
-                result['records'] = previous_result['records']
-                # Continue the recursion
-                return get_all_results(result, **kwargs)
+
+            stack = []
+            stack.append([result, kwargs])
+            while len(stack) > 0:
+                previous_result, kwargs = stack.pop()
+                if previous_result['done']:
+                    return previous_result
+                else:
+                    result = self.query_more(previous_result['nextRecordsUrl'],
+                                             identifier_is_url=True, **kwargs)
+                    result['totalSize'] += previous_result['totalSize']
+                    # Include the new list of records with the previous list
+                    previous_result['records'].extend(result['records'])
+                    result['records'] = previous_result['records']
+
+                    stack.push([result, kwargs])
+            return result
 
         # Make the initial query to Salesforce
         result = self.query(query, **kwargs)
