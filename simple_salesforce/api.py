@@ -355,7 +355,7 @@ class Salesforce(object):
                     previous_result['records'].extend(result['records'])
                     result['records'] = previous_result['records']
 
-                    stack.push([result, kwargs])
+                    stack.append([result, kwargs])
             return result
 
         # Make the initial query to Salesforce
