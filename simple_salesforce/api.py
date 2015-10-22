@@ -342,7 +342,7 @@ class Salesforce(object):
             """
 
             stack = []
-            stack.append([result, kwargs])
+            stack.append([previous_result, kwargs])
             while len(stack) > 0:
                 previous_result, kwargs = stack.pop()
                 if previous_result['done']:
